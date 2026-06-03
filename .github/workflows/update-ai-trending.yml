@@ -21,16 +21,18 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install scrapling jinja2
+        run: pip install scrapling jinja2 curl_cffi browserforge
 
       - name: Scrape GitHub Trending (weekly + monthly)
         run: python scrape_trending.py
+        env:
+          SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html _cached_weekly.html _cached_monthly.html
+          git add index.html _cached_weekly.html _cached_monthly.html scrape_trending.py
           git diff --quiet && git diff --staged --quiet || \
             git commit -m "🤖 Auto-update AI Trending ($(date -u '+%Y-%m-%d'))"
           git push
