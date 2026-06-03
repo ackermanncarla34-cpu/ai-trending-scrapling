@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub 中文区 AI 热门项目排行榜 — 每周/每月更新 Trending AI 项目聚合">
+  <meta name="keywords" content="GitHub,AI,Trending,中文,热门项目,开源">
+  <meta property="og:title" content="GitHub 中文区 AI 热门项目">
+  <meta property="og:description" content="AI 开源项目排行榜 · 每周/每月更新">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="twitter:card" content="summary">
+  <title>🤖 GitHub 中文区 AI 热门项目</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #fff;
+  --fg: #111;
+  --border: #e0e0e0;
+  --muted: #888;
+  --card-bg: #fafafa;
+  --accent: #000;
+  --tag-bg: #f0f0f0;
+  --green: #2a2;
+  --transition: 0.25s ease;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+header { text-align: center; padding: 24px 0 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+.subtitle { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.update-badge { display: none; }
+
+.toggle-bar {
+  display: flex; gap: 0; margin: 0 auto 20px;
+  border: 1px solid var(--accent); border-radius: 8px; overflow: hidden;
+  max-width: 320px;
+}
+.toggle-btn {
+  flex: 1; padding: 10px 0; text-align: center; font-size: 14px; font-weight: 600;
+  border: none; background: var(--bg); color: var(--muted);
+  cursor: pointer; transition: background var(--transition), color var(--transition);
+  letter-spacing: 0.5px;
+}
+.toggle-btn.active { background: var(--accent); color: #fff; }
+.update-time { font-size: 11px; color: var(--muted); text-align: center; margin-bottom: 16px; }
+
+.project-list {
+  display: grid; grid-template-columns: 1fr; gap: 12px;
+  transition: opacity 0.2s ease;
+}
+
+.project-card {
+  display: block; text-decoration: none; color: var(--fg);
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; position: relative;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.project-card:hover, .project-card:active {
+  border-color: var(--accent); box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.rank-badge {
+  display: inline-block; font-size: 11px; font-weight: 700; color: var(--muted);
+  min-width: 24px;
+}
+
+.card-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+}
+.avatar { display: none; }
+.repo-info { flex: 1; min-width: 0; }
+.owner { display: none; }
+.repo-name {
+  font-size: 16px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.repo-name .name {
+  color: var(--accent); word-break: break-all;
+}
+
+.description {
+  font-size: 13px; color: #555; margin-bottom: 10px; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.stats {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 0;
+}
+.stat { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--fg); }
+.stat .star-icon { color: var(--fg); }
+.stat .num { font-weight: 600; }
+.stat-fork { display: none; }
+.hot-badge {
+  font-size: 12px; color: var(--green); font-weight: 600;
+}
+
+.meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 8px; }
+.lang-dot { display: none; }
+.lang { font-size: 11px; padding: 2px 8px; border-radius: 12px; background: var(--tag-bg); color: var(--muted); font-weight: 500; }
+.tags { display: none; }
+.license { display: none; }
+
+footer { text-align: center; padding: 24px 0; font-size: 11px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 24px; }
+
+@media (min-width: 640px) {
+  body { max-width: 900px; padding: 24px 32px; }
+  .project-list { grid-template-columns: 1fr 1fr; gap: 14px; }
+  header { padding: 32px 0 8px; margin-bottom: 24px; }
+  h1 { font-size: 24px; }
+  .subtitle { font-size: 13px; }
+}
+
+@media (min-width: 1024px) {
+  body {
+    max-width: 100%;
+    padding: 0;
+    background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+    color: #e6edf3;
+    min-height: 100vh;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 40px 24px; position: relative; }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,212,255,0.18) 1.5px, transparent 1.5px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0,212,255,0) 3%,
+      #00d4ff 15%,
+      #a855f7 40%,
+      #ff6b35 60%,
+      #a855f7 78%,
+      #00d4ff 90%,
+      transparent 100%
+    );
+    box-shadow: 0 0 18px rgba(0,212,255,0.5), 0 0 60px rgba(168,85,247,0.25);
+    pointer-events: none;
+    z-index: 100;
+    opacity: 1;
+  }
+
+  header {
+    text-align: center; padding: 0 0 0 0 !important; margin-bottom: 48px !important;
+    border-bottom: none;
+    display: block;
+  }
+  header h1 {
+    font-size: 2.8rem !important; font-weight: 800;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 8px;
+  }
+  header .subtitle {
+    font-size: 1.1rem !important; color: #8b949e; margin-top: 0 !important;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  header .subtitle svg { width: 20px; height: 20px; fill: #8b949e; flex-shrink: 0; }
+  .update-badge {
+    display: inline-block; margin-top: 12px;
+    background: rgba(88,166,255,0.15); color: #58a6ff;
+    padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
+    border: 1px solid rgba(88,166,255,0.3);
+  }
+  .update-time { display: none; }
+
+  .toggle-bar {
+    max-width: 320px; margin: 20px auto 0;
+    border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+    background: rgba(255,255,255,0.04);
+  }
+  .toggle-btn {
+    padding: 8px 24px; font-size: 14px;
+    background: transparent; color: #8b949e;
+  }
+  .toggle-btn.active {
+    background: rgba(255,255,255,0.10); color: #fff;
+    backdrop-filter: blur(4px);
+  }
+
+  .project-list {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)) !important;
+    gap: 20px !important;
+  }
+
+  .project-card {
+    display: block; text-decoration: none;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+    color: #e6edf3;
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: #58a6ff;
+    box-shadow: 0 12px 32px rgba(88,166,255,0.1);
+  }
+
+  .rank-badge {
+    position: absolute; top: 12px; right: 12px;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.85rem;
+    min-width: auto;
+  }
+  .rank-1 { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #0d1117; }
+  .rank-2 { background: linear-gradient(135deg, #e0e0e0, #c0c0c0); color: #0d1117; }
+  .rank-3 { background: linear-gradient(135deg, #cd7f32, #a0522d); color: #fff; }
+  .rank-other { background: rgba(139,148,158,0.2); color: #8b949e; }
+
+  .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .avatar {
+    display: flex !important;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #21262d; flex-shrink: 0;
+    align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: 700; color: #58a6ff;
+  }
+  .repo-info { flex: 1; min-width: 0; }
+  .owner { display: block; font-size: 0.8rem; color: #8b949e; }
+  .repo-name { display: block; gap: 0; }
+  .repo-name .name {
+    font-size: 1.1rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: block;
+  }
+  .repo-name .name a { color: #58a6ff; text-decoration: none; }
+  .repo-name .name a:hover { text-decoration: underline; }
+
+  .description {
+    font-size: 0.9rem; color: #8b949e; line-height: 1.5;
+    margin-bottom: 16px;
+    -webkit-line-clamp: 3; color: #8b949e;
+  }
+
+  .stats {
+    display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px;
+    font-size: 0.85rem;
+  }
+  .stat { display: flex; align-items: center; gap: 4px; color: #8b949e; }
+  .stat .star-icon { color: #8b949e; }
+  .stat .num { font-weight: 600; color: #e6edf3; }
+  .stat-fork { display: flex !important; }
+  .hot-badge {
+    background: rgba(255,102,0,0.15); color: #ff6600;
+    padding: 2px 10px; border-radius: 10px; font-weight: 600;
+    font-size: 0.8rem; border: 1px solid rgba(255,102,0,0.3);
+    margin-left: auto;
+  }
+
+  .meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .lang { font-size: 0.85rem; color: #8b949e; display: flex; align-items: center; gap: 6px; background: none; padding: 0; border-radius: 0; }
+  .lang-dot { display: inline-block !important; width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+  .tag {
+    font-size: 0.75rem; background: rgba(88,166,255,0.1);
+    color: #58a6ff; padding: 2px 8px; border-radius: 8px;
+    max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .license { display: block; font-size: 0.78rem; color: #484f58; margin-top: 10px; }
+
+  footer {
+    text-align: center; margin-top: 48px; padding: 20px 0;
+    border-top: 1px solid #21262d; color: #484f58; font-size: 0.85rem;
+  }
+  footer a { color: #58a6ff; text-decoration: none; }
+
+  .container { position: relative; }
+
+  .corner {
+    position: absolute;
+    width: 36px; height: 36px;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.9;
+    animation: cornerPulse 2.5s ease-in-out infinite;
+  }
+  .corner-tl {
+    top: -1px; left: -1px;
+    border-top: 3px solid #00d4ff;
+    border-left: 3px solid #00d4ff;
+    border-radius: 8px 0 0 0;
+    box-shadow: -2px -2px 12px rgba(0,212,255,0.5), 0 0 20px rgba(0,212,255,0.15);
+  }
+  .corner-tr {
+    top: -1px; right: -1px;
+    border-top: 3px solid #a855f7;
+    border-right: 3px solid #a855f7;
+    border-radius: 0 8px 0 0;
+    box-shadow: 2px -2px 12px rgba(168,85,247,0.5), 0 0 20px rgba(168,85,247,0.15);
+  }
+  .corner-bl {
+    bottom: -1px; left: -1px;
+    border-bottom: 3px solid #a855f7;
+    border-left: 3px solid #a855f7;
+    border-radius: 0 0 0 8px;
+    box-shadow: -2px 2px 12px rgba(168,85,247,0.5), 0 0 20px rgba(168,85,247,0.15);
+  }
+  .corner-br {
+    bottom: -1px; right: -1px;
+    border-bottom: 3px solid #00d4ff;
+    border-right: 3px solid #00d4ff;
+    border-radius: 0 0 8px 0;
+    box-shadow: 2px 2px 12px rgba(0,212,255,0.5), 0 0 20px rgba(0,212,255,0.15);
+  }
+
+  .container::before,
+  .container::after {
+    content: '';
+    position: absolute;
+    top: 8%;
+    width: 2px;
+    height: 84%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container::before {
+    left: 0;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(0,212,255,0.35) 25%,
+      rgba(168,85,247,0.5) 50%,
+      rgba(0,212,255,0.35) 75%,
+      transparent 100%
+    );
+    box-shadow: -1px 0 6px rgba(0,212,255,0.15);
+  }
+  .container::after {
+    right: 0;
+    background: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(0,212,255,0.35) 25%,
+      rgba(168,85,247,0.5) 50%,
+      rgba(0,212,255,0.35) 75%,
+      transparent 100%
+    );
+    box-shadow: 1px 0 6px rgba(0,212,255,0.15);
+  }
+
+  .container .bottom-line {
+    position: absolute;
+    bottom: -1px; left: 10%;
+    width: 80%; height: 2px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(0,212,255,0.3) 15%,
+      #00d4ff 30%,
+      #a855f7 50%,
+      #00d4ff 70%,
+      rgba(0,212,255,0.3) 85%,
+      transparent 100%
+    );
+    box-shadow: 0 0 10px rgba(0,212,255,0.3);
+    pointer-events: none;
+  }
+}
+
+@media not all and (min-width: 1024px) {
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d1117;
+    --fg: #c9d1d9;
+    --border: #30363d;
+    --muted: #8b949e;
+    --card-bg: #161b22;
+    --accent: #58a6ff;
+    --tag-bg: #21262d;
+  }
+  .project-card:hover, .project-card:active {
+    box-shadow: 0 2px 12px rgba(88,166,255,0.08);
+  }
+  .description { color: #8b949e; }
+}
+}
+
+@keyframes cornerPulse {
+  0%, 100% { opacity: 0.65; filter: drop-shadow(0 0 4px rgba(0,212,255,0.3)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 12px rgba(0,212,255,0.6)); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <span class="corner corner-tl"></span>
+  <span class="corner corner-tr"></span>
+  <span class="corner corner-bl"></span>
+  <span class="corner corner-br"></span>
+  <span class="bottom-line"></span>
+  <header>
+    <h1>🤖 GitHub 中文区 AI 热门</h1>
+    <p class="subtitle">
+      <svg viewBox="0 0 16 16" width="20" height="20"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      数据来自 GitHub Trending · 中文区 AI 热门
+    </p>
+    <span class="update-badge">📅 2026年6月 · 按新增 Star 排序</span>
+  </header>
+
+  <div class="toggle-bar">
+    <button class="toggle-btn active" data-tab="weekly">本周</button>
+    <button class="toggle-btn" data-tab="monthly">本月</button>
+  </div>
+
+  <p class="update-time">更新时间：2026-06-02</p>
+
+  <div class="project-list" id="weekly-list">
+    <div class="project-card">
+      <div class="rank-badge rank-1">1</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e3f2fd;color:#1565c0;">H</div>
+        <div class="repo-info">
+          <span class="owner">harry0703</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/harry0703/MoneyPrinterTurbo">MoneyPrinterTurbo</a></span></div>
+        </div>
+      </div>
+      <div class="description">利用AI大模型，一键生成高清短视频 Generate short videos with one click using AI LLM.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">77.8k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">11.0k</span></span>
+        <span class="hot-badge">🔥 +18,917</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        <div class="tags"><span class="tag">ai</span><span class="tag">automation</span><span class="tag">chatgpt</span><span class="tag">moviepy</span><span class="tag">python</span></div>
+      </div>
+      <div class="license">MIT License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-2">2</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fff8e1;color:#f9a825;">M</div>
+        <div class="repo-info">
+          <span class="owner">microsoft</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/microsoft/markitdown">markitdown</a></span></div>
+        </div>
+      </div>
+      <div class="description">Python tool for converting files and office documents to Markdown.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">141k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">9.6k</span></span>
+        <span class="hot-badge">🔥 +11,962</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        <div class="tags"><span class="tag">autogen</span><span class="tag">autogen-extension</span><span class="tag">langchain</span><span class="tag">markdown</span><span class="tag">microsoft-office</span></div>
+      </div>
+      <div class="license">MIT License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-3">3</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#f3e5f5;color:#7b1fa2;">C</div>
+        <div class="repo-info">
+          <span class="owner">chopratejas</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/chopratejas/headroom">headroom</a></span></div>
+        </div>
+      </div>
+      <div class="description">Compress tool outputs, logs, files, and RAG chunks before they reach the LLM. 60-95% fewer tokens, same answers. Library, proxy, MCP server.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">5.4k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">395</span></span>
+        <span class="hot-badge">🔥 +1,868</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        <div class="tags"><span class="tag">agent</span><span class="tag">ai</span><span class="tag">anthropic</span><span class="tag">claude-code</span><span class="tag">compression</span></div>
+      </div>
+      <div class="license">Apache-2.0 License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">4</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#f3e5f5;color:#7b1fa2;">L</div>
+        <div class="repo-info">
+          <span class="owner">Lum1104</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/Lum1104/Understand-Anything">Understand-Anything</a></span></div>
+        </div>
+      </div>
+      <div class="description">Graphs that teach > graphs that impress. Turn any code into an interactive knowledge graph you can explore, search, and ask questions about. Works with Claude Code, Codex, Cursor, Copilot, Gemini CLI, and more.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">49.9k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">4.1k</span></span>
+        <span class="hot-badge">🔥 +19,223</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        <div class="tags"><span class="tag">antigravity-skills</span><span class="tag">business-knowledge</span><span class="tag">claude-code</span><span class="tag">claude-skills</span><span class="tag">codebase-analysis</span></div>
+      </div>
+      <div class="license">MIT License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">5</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e3f2fd;color:#1565c0;">H</div>
+        <div class="repo-info">
+          <span class="owner">hardikpandya</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/hardikpandya/stop-slop">stop-slop</a></span></div>
+        </div>
+      </div>
+      <div class="description">A skill file for removing AI tells from prose</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">8.2k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">573</span></span>
+        <span class="hot-badge">🔥 +3,770</span>
+      </div>
+      <div class="meta">
+        <span class="lang"></span>
+        
+      </div>
+      <div class="license">MIT License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">6</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e3f2fd;color:#1565c0;">L</div>
+        <div class="repo-info">
+          <span class="owner">Leonxlnx</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/Leonxlnx/taste-skill">taste-skill</a></span></div>
+        </div>
+      </div>
+      <div class="description">Taste-Skill - gives your AI good taste. stops the AI from generating boring, generic slop</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">31.6k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.3k</span></span>
+        <span class="hot-badge">🔥 +11,474</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#89e051;"></span> Shell</span>
+        <div class="tags"><span class="tag">agent</span><span class="tag">ai</span><span class="tag">claude</span><span class="tag">claude-code</span><span class="tag">codex</span></div>
+      </div>
+      <div class="license">MIT License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">7</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">R</div>
+        <div class="repo-info">
+          <span class="owner">revfactory</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/revfactory/harness">harness</a></span></div>
+        </div>
+      </div>
+      <div class="description">A meta-skill that designs domain-specific agent teams, defines specialized agents, and generates the skills they use.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">5.5k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">719</span></span>
+        <span class="hot-badge">🔥 +1,430</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#e34c26;"></span> HTML</span>
+        <div class="tags"><span class="tag">claude-code</span><span class="tag">claude-code-plugin</span><span class="tag">harness</span><span class="tag">harness-engineering</span></div>
+      </div>
+      <div class="license">Apache-2.0 License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">8</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">R</div>
+        <div class="repo-info">
+          <span class="owner">rohitg00</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/rohitg00/ai-engineering-from-scratch">ai-engineering-from-scratch</a></span></div>
+        </div>
+      </div>
+      <div class="description">Learn it. Build it. Ship it for others.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">27.2k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">4.4k</span></span>
+        <span class="hot-badge">🔥 +8,744</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        <div class="tags"><span class="tag">agents</span><span class="tag">ai</span><span class="tag">ai-agents</span><span class="tag">ai-engineering</span><span class="tag">computer-vision</span></div>
+      </div>
+      <div class="license">MIT License</div>
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">9</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fbe9e7;color:#bf360c;">C</div>
+        <div class="repo-info">
+          <span class="owner">colbymchenry</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/colbymchenry/codegraph">codegraph</a></span></div>
+        </div>
+      </div>
+      <div class="description">Pre-indexed code knowledge graph for Claude Code, Codex, Gemini, Cursor, OpenCode, AntiGravity, Kiro, and Hermes Agent — fewer tokens, fewer tool calls, 100% local</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">37.7k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.3k</span></span>
+        <span class="hot-badge">🔥 +12,380</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">10</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e8f5e9;color:#2e7d32;">M</div>
+        <div class="repo-info">
+          <span class="owner">mukul975</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/mukul975/Anthropic-Cybersecurity-Skills">Anthropic-Cybersecurity-Skills</a></span></div>
+        </div>
+      </div>
+      <div class="description">754 structured cybersecurity skills for AI agents · Mapped to 5 frameworks: MITRE ATT&CK, NIST CSF 2.0, MITRE ATLAS, D3FEND & NIST AI RMF · agentskills.io standard · Works with Claude Code, GitHub Copilot, Codex CLI, Cursor, Gemini CLI & 20+ platforms · 26 security domains · Apache 2.0</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">13.5k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">1.6k</span></span>
+        <span class="hot-badge">🔥 +4,330</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">11</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fbe9e7;color:#bf360c;">A</div>
+        <div class="repo-info">
+          <span class="owner">affaan-m</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/affaan-m/ECC">ECC</a></span></div>
+        </div>
+      </div>
+      <div class="description">The agent harness performance optimization system. Skills, instincts, memory, security, and research-first development for Claude Code, Codex, Opencode, Cursor and beyond.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">203k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">31.2k</span></span>
+        <span class="hot-badge">🔥 +10,309</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#f1e05a;"></span> JavaScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">12</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">E</div>
+        <div class="repo-info">
+          <span class="owner">EveryInc</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/EveryInc/compound-engineering-plugin">compound-engineering-plugin</a></span></div>
+        </div>
+      </div>
+      <div class="description">Official Compound Engineering plugin for Claude Code, Codex, Cursor, and more</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">19.3k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">1.4k</span></span>
+        <span class="hot-badge">🔥 +1,831</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">13</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e8f5e9;color:#2e7d32;">A</div>
+        <div class="repo-info">
+          <span class="owner">anthropics</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/anthropics/knowledge-work-plugins">knowledge-work-plugins</a></span></div>
+        </div>
+      </div>
+      <div class="description">Open source repository of plugins primarily intended for knowledge workers to use in Claude Cowork</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">18.8k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.2k</span></span>
+        <span class="hot-badge">🔥 +3,981</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">14</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fff8e1;color:#f9a825;">M</div>
+        <div class="repo-info">
+          <span class="owner">microsoft</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/microsoft/agent-governance-toolkit">agent-governance-toolkit</a></span></div>
+        </div>
+      </div>
+      <div class="description">AI Agent Governance Toolkit — Policy enforcement, zero-trust identity, execution sandboxing, and reliability engineering for autonomous AI agents. Covers 10/10 OWASP Agentic Top 10.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">3.8k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">530</span></span>
+        <span class="hot-badge">🔥 +1,529</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">15</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fbe9e7;color:#bf360c;">C</div>
+        <div class="repo-info">
+          <span class="owner">Chachamaru127</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/Chachamaru127/claude-code-harness">claude-code-harness</a></span></div>
+        </div>
+      </div>
+      <div class="description">Claude Code Dedicated Development Harness - Achieving High-Quality Development Through an Autonomous Plan→Work→Review Cycle</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">2.5k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">241</span></span>
+        <span class="hot-badge">🔥 +964</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#89e051;"></span> Shell</span>
+        
+      </div>
+      
+    </div>
+  </div>
+
+  <div class="project-list" id="monthly-list" style="display:none">
+    <div class="project-card">
+      <div class="rank-badge rank-1">1</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fbe9e7;color:#bf360c;">C</div>
+        <div class="repo-info">
+          <span class="owner">colbymchenry</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/colbymchenry/codegraph">codegraph</a></span></div>
+        </div>
+      </div>
+      <div class="description">Pre-indexed code knowledge graph for Claude Code, Codex, Gemini, Cursor, OpenCode, AntiGravity, Kiro, and Hermes Agent — fewer tokens, fewer tool calls, 100% local</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">37.7k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.3k</span></span>
+        <span class="hot-badge">🔥 +35,822</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-2">2</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e8f5e9;color:#2e7d32;">H</div>
+        <div class="repo-info">
+          <span class="owner">Hmbown</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/Hmbown/CodeWhale">CodeWhale</a></span></div>
+        </div>
+      </div>
+      <div class="description">DeepSeek + MiMo coding agent in terminal</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">36.7k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">3.2k</span></span>
+        <span class="hot-badge">🔥 +35,709</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#dea584;"></span> Rust</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-3">3</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">R</div>
+        <div class="repo-info">
+          <span class="owner">rohitg00</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/rohitg00/agentmemory">agentmemory</a></span></div>
+        </div>
+      </div>
+      <div class="description">#1 Persistent memory for AI coding agents based on real-world benchmarks</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">20.7k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">1.7k</span></span>
+        <span class="hot-badge">🔥 +18,378</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">4</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#f3e5f5;color:#7b1fa2;">L</div>
+        <div class="repo-info">
+          <span class="owner">Lum1104</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/Lum1104/Understand-Anything">Understand-Anything</a></span></div>
+        </div>
+      </div>
+      <div class="description">Graphs that teach > graphs that impress. Turn any code into an interactive knowledge graph you can explore, search, and ask questions about. Works with Claude Code, Codex, Cursor, Copilot, Gemini CLI, and more.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">49.9k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">4.1k</span></span>
+        <span class="hot-badge">🔥 +38,958</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">5</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fce4ec;color:#c62828;">I</div>
+        <div class="repo-info">
+          <span class="owner">Imbad0202</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/Imbad0202/academic-research-skills">academic-research-skills</a></span></div>
+        </div>
+      </div>
+      <div class="description">Academic Research Skills for Claude Code: research → write → review → revise → finalize</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">26.1k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.1k</span></span>
+        <span class="hot-badge">🔥 +21,719</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">6</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#f3e5f5;color:#7b1fa2;">F</div>
+        <div class="repo-info">
+          <span class="owner">fathah</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/fathah/hermes-desktop">hermes-desktop</a></span></div>
+        </div>
+      </div>
+      <div class="description">Desktop Companion for Hermes Agent</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">9.3k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">1.1k</span></span>
+        <span class="hot-badge">🔥 +8,514</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">7</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e3f2fd;color:#1565c0;">H</div>
+        <div class="repo-info">
+          <span class="owner">harry0703</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/harry0703/MoneyPrinterTurbo">MoneyPrinterTurbo</a></span></div>
+        </div>
+      </div>
+      <div class="description">利用AI大模型，一键生成高清短视频 Generate short videos with one click using AI LLM.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">77.8k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">11.0k</span></span>
+        <span class="hot-badge">🔥 +20,221</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">8</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">R</div>
+        <div class="repo-info">
+          <span class="owner">rohitg00</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/rohitg00/ai-engineering-from-scratch">ai-engineering-from-scratch</a></span></div>
+        </div>
+      </div>
+      <div class="description">Learn it. Build it. Ship it for others.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">27.2k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">4.4k</span></span>
+        <span class="hot-badge">🔥 +20,541</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3572A5;"></span> Python</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">9</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">M</div>
+        <div class="repo-info">
+          <span class="owner">mattpocock</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/mattpocock/skills">skills</a></span></div>
+        </div>
+      </div>
+      <div class="description">Skills for Real Engineers. Straight from my .claude directory.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">115k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">10.1k</span></span>
+        <span class="hot-badge">🔥 +63,283</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#89e051;"></span> Shell</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">10</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#e0f7fa;color:#00838f;">D</div>
+        <div class="repo-info">
+          <span class="owner">decolua</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/decolua/9router">9router</a></span></div>
+        </div>
+      </div>
+      <div class="description">Unlimited FREE AI coding. Connect Claude Code, Codex, Cursor, Cline, Copilot, Antigravity to FREE Claude/GPT/Gemini via 40+ providers. Auto-fallback, RTK -40% tokens, never hit limits.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">15.9k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.4k</span></span>
+        <span class="hot-badge">🔥 +12,304</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#f1e05a;"></span> JavaScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">11</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#f3e5f5;color:#7b1fa2;">Y</div>
+        <div class="repo-info">
+          <span class="owner">yikart</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/yikart/AiToEarn">AiToEarn</a></span></div>
+        </div>
+      </div>
+      <div class="description">Let's use AI to Earn!</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">17.5k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">2.8k</span></span>
+        <span class="hot-badge">🔥 +8,335</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">12</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fbe9e7;color:#bf360c;">B</div>
+        <div class="repo-info">
+          <span class="owner">bytedance</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/bytedance/UI-TARS-desktop">UI-TARS-desktop</a></span></div>
+        </div>
+      </div>
+      <div class="description">The Open-Source Multimodal AI Agent Stack: Connecting Cutting-Edge AI Models and Agent Infra</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">35.9k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">3.6k</span></span>
+        <span class="hot-badge">🔥 +6,426</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">13</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#f3e5f5;color:#7b1fa2;">R</div>
+        <div class="repo-info">
+          <span class="owner">ruvnet</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/ruvnet/RuView">RuView</a></span></div>
+        </div>
+      </div>
+      <div class="description">π RuView turns commodity WiFi signals into real-time spatial intelligence, vital sign monitoring, and presence detection — all without a single pixel of video.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">70.1k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">9.4k</span></span>
+        <span class="hot-badge">🔥 +19,186</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#dea584;"></span> Rust</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">14</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fff3e0;color:#e65100;">C</div>
+        <div class="repo-info">
+          <span class="owner">can1357</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/can1357/oh-my-pi">oh-my-pi</a></span></div>
+        </div>
+      </div>
+      <div class="description">⌥ AI Coding agent for the terminal — hash-anchored edits, optimized tool harness, LSP, Python, browser, subagents, and more</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">9.9k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">807</span></span>
+        <span class="hot-badge">🔥 +5,666</span>
+      </div>
+      <div class="meta">
+        <span class="lang"><span class="lang-dot" style="background:#3178C6;"></span> TypeScript</span>
+        
+      </div>
+      
+    </div>
+    <div class="project-card">
+      <div class="rank-badge rank-other">15</div>
+      <div class="card-header">
+        <div class="avatar" style="background:#fff8e1;color:#f9a825;">M</div>
+        <div class="repo-info">
+          <span class="owner">multica-ai</span>
+          <div class="repo-name"><span class="name"><a href="https://github.com/multica-ai/andrej-karpathy-skills">andrej-karpathy-skills</a></span></div>
+        </div>
+      </div>
+      <div class="description">A single CLAUDE.md file to improve Claude Code behavior, derived from Andrej Karpathy's observations on LLM coding pitfalls.</div>
+      <div class="stats">
+        <span class="stat"><span class="star-icon">⭐</span> <span class="num">166k</span></span>
+        <span class="stat stat-fork">⑂ <span class="num">16.9k</span></span>
+        <span class="hot-badge">🔥 +61,554</span>
+      </div>
+      <div class="meta">
+        <span class="lang"></span>
+        
+      </div>
+      
+    </div>
+  </div>
+
+  <footer>
+    <p>数据来源：<a href="https://github.com/trending" target="_blank">GitHub Trending</a> · 由 <a href="https://github.com/D4Vinci/Scrapling" target="_blank">Scrapling</a> 自动抓取 · 更新时间 2026-06-02</p>
+    <p style="margin-top:4px">用 ⭐ 支持你喜欢的项目！</p>
+  </footer>
+</div>
+
+<script>
+function switchTab(tab) {
+  const currentActive = document.querySelector('.toggle-btn.active');
+  const btn = document.querySelector('.toggle-btn[data-tab="'+tab+'"]');
+  if (currentActive === btn) return;
+  currentActive.classList.remove('active');
+  btn.classList.add('active');
+  document.getElementById('weekly-list').style.display = tab === 'weekly' ? '' : 'none';
+  document.getElementById('monthly-list').style.display = tab === 'monthly' ? '' : 'none';
+}
+document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    switchTab(this.getAttribute('data-tab'));
+  });
+});
+</script>
+</body>
+</html>

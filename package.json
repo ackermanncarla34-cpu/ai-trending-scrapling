@@ -1,0 +1,10 @@
+{
+  "name": "github-ai-trending",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub 中文区 AI 热门项目排行榜 — 每周更新",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}
