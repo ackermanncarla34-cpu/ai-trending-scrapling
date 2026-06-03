@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html _cached_weekly.html _cached_monthly.html scrape_trending.py
+          git add _cached_weekly.html _cached_monthly.html scrape_trending.py data.json
           git diff --quiet && git diff --staged --quiet || \
             git commit -m "🤖 Auto-update AI Trending ($(date -u '+%Y-%m-%d'))"
           git push
