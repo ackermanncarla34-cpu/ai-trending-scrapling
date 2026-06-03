@@ -21,7 +21,7 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install scrapling jinja2 curl_cffi browserforge playwright
+        run: pip install -r requirements.txt
 
       - name: Scrape GitHub Trending (weekly + monthly)
         run: python scrape_trending.py

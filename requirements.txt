@@ -1,0 +1,5 @@
+scrapling
+jinja2
+curl_cffi
+browserforge
+playwright
