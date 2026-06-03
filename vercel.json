@@ -8,6 +8,7 @@
     }
   ],
   "routes": [
+    { "src": "/data.json", "dest": "/data.json" },
     { "src": "/", "dest": "/index.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
